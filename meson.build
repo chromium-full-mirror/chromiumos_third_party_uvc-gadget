@@ -61,6 +61,7 @@ conf = configuration_data()
 
 if libcamera.found()
   conf.set('HAVE_LIBCAMERA', true)
+  summary({ 'libcamera': libcamera.version(), }, section : 'Versions')
 endif
 
 if libjpeg.found() and threads.found()
