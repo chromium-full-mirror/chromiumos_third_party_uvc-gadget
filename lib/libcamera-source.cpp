@@ -469,13 +469,13 @@ std::string cameraName(Camera *camera)
 	const auto &location = props.get(properties::Location);
 	if (location) {
 		switch (*location) {
-		case properties::CameraLocationFront:
+		case properties::LocationFront:
 			name = "Internal Front Camera";
 			break;
-		case properties::CameraLocationBack:
+		case properties::LocationBack:
 			name = "Internal back camera";
 			break;
-		case properties::CameraLocationExternal:
+		case properties::LocationExternal:
 			name = "External camera";
 			const auto &model = props.get(properties::Model);
 			if (model)
