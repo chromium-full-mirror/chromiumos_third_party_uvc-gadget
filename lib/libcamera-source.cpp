@@ -12,6 +12,7 @@
 #include <iostream>
 #include <memory.h>
 #include <queue>
+#include <span>
 #include <stdlib.h>
 #include <string>
 #include <string.h>
@@ -51,7 +52,7 @@ struct libcamera_source {
 	int pfds[2];
 
 	MjpegEncoder *encoder;
-	std::unordered_map<FrameBuffer *, Span<uint8_t>> mapped_buffers_;
+	std::unordered_map<FrameBuffer *, std::span<uint8_t>> mapped_buffers_;
 
 	struct video_buffer_set buffers;
 
@@ -73,7 +74,7 @@ void libcamera_source::mapBuffer(const std::unique_ptr<FrameBuffer> &buffer)
 			void *memory = mmap(NULL, buffer_size, PROT_READ | PROT_WRITE,
 						MAP_SHARED, plane.fd.get(), 0);
 			mapped_buffers_[buffer.get()] =
-				Span<uint8_t>(static_cast<uint8_t *>(memory), buffer_size);
+				std::span<uint8_t>(static_cast<uint8_t *>(memory), buffer_size);
 			buffer_size = 0;
 		}
 	}
@@ -235,9 +236,10 @@ static int libcamera_source_set_frame_rate(struct video_source *s, unsigned int 
 {
 	struct libcamera_source *src = to_libcamera_source(s);
 	int64_t frame_time = 1000000 / fps;
+	const int64_t frame_duration_limits[] = { frame_time, frame_time };
 
 	src->controls.set(controls::FrameDurationLimits,
-			  Span<const int64_t, 2>({ frame_time, frame_time }));
+			  std::span<const int64_t, 2>(frame_duration_limits));
 
 	return 0;
 }
